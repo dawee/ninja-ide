@@ -132,11 +132,25 @@ class Highlighter (QSyntaxHighlighter):
                 style = reg[2]
             rules.append((expr, 0, format(color, style)))
 
-        stringChar = langSyntax.get('string', [])
-        for sc in stringChar:
-            expr = r'"[^"\\]*(\\.[^"\\]*)*"' if sc == '"' \
-                else r"'[^'\\]*(\\.[^'\\]*)*'"
-            rules.append((expr, 0, STYLES['string']))
+        PATQUO1 = r'^' \
+                  r'(' \
+                      r'(' \
+                          r'(?:(?!(|[^\\\"])\").)*' \
+                          r'(|[^\\\"])\"' \
+                          r'(?:(?!(|[^\\\"])\").)*' \
+                          r'(|[^\\\"])\"' \
+                          r'(?:(?!(|[^\\\"])\").)*' \
+                      r'|' \
+                          r'(?:(?!(|[^\\\"])\").)*' \
+                      r')*' \
+                      r'(' \
+                          r'(|[^\\\'\"])\'' \
+                          r'(?:(?!(|[^\\\'])\').)*' \
+                          r'(|[^\\\'\"])\'' \
+                      r')' \
+                  r')*' \
+
+        rules.append((PATQUO1, 5, STYLES['string']))
 
         comments = langSyntax.get('comment', [])
         for co in comments:
